@@ -1,7 +1,13 @@
 package com.example.backend.Controllers;
 
+import com.example.backend.Models.FileEntity;
 import com.example.backend.Services.FileStorageService;
 import com.example.backend.payload.UploadFileResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,27 +38,42 @@ public class FileController {
     private FileStorageService fileStorageService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
+    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file,
+            @RequestParam("userId") Long userId) {
+        FileEntity fileName = fileStorageService.storeFile(file, userId);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/files/download/")
-                .path(fileName)
+                .path("/api/files/download/" + fileName)
                 .toUriString();
 
         return new UploadFileResponse(fileName, fileDownloadUri,
                 file.getContentType(), file.getSize());
     }
 
+    @Operation(summary = "Upload multiple files", description = "Uploads multiple files with userId")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Files uploaded successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input")
+    })
     @PostMapping(value = "/uploads", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
-        return Arrays.stream(files)
-                .map(this::uploadFile)
-                .collect(Collectors.toList());
+    public ResponseEntity<?> uploadMultipleFiles(
+            @Parameter(description = "List of files", required = true)
+            @RequestPart("files") MultipartFile[] files,
+
+            @Parameter(description = "User ID", required = true)
+            @RequestPart("userId") Long userId) {
+
+        List<FileEntity> uploadedFiles = new ArrayList<>();
+        for (MultipartFile file : files) {
+            FileEntity fileEntity = fileStorageService.storeFile(file, userId);
+            uploadedFiles.add(fileEntity);
+        }
+        return ResponseEntity.ok(uploadedFiles);
     }
 
     @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) throws FileNotFoundException {
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request)
+            throws FileNotFoundException {
         Resource resource = fileStorageService.loadFileAsResource(fileName);
 
         String contentType = null;
@@ -80,7 +102,8 @@ public class FileController {
     }
 
     @GetMapping("/view/{fileName:.+}")
-    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request) throws FileNotFoundException {
+    public ResponseEntity<Resource> viewFile(@PathVariable String fileName, HttpServletRequest request)
+            throws FileNotFoundException {
         Resource resource = fileStorageService.loadFileAsResource(fileName);
 
         String contentType = null;

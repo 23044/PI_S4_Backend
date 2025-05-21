@@ -32,11 +32,7 @@ public class Doctorants {
     private LocalDate dateNaissance;
     private String nationalite;
     private String telephone;
-    private String sujetThese;
-    private LocalDate dateInscription;
-    private LocalDate dateSoutenance;
-    private String fichierThese;
-    private String etatThese;
+   
 
     @OneToOne
     @JoinColumn(name = "user_id", unique = true)

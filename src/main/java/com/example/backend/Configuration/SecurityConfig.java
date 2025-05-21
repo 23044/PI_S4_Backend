@@ -24,16 +24,17 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v2/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**"
-                        ).permitAll()
+                                "/webjars/**")
+                        .permitAll()
                         .requestMatchers("/api/doctorant/dashboard/**").permitAll()
                         .requestMatchers("/upload-file").permitAll()
                         .requestMatchers("/api/files/upload").permitAll()
+                        .requestMatchers("/api/files/uploads").permitAll()
                         .requestMatchers("/api/files/download/{fileName:.+}").permitAll()
                         .requestMatchers("/api/files/list").permitAll()
                         .requestMatchers("/api/files/view/{fileName:.+}").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().authenticated())
                 .cors() // Enable CORS
                 .and()
                 .formLogin() // Optional: enables default login page

@@ -1,23 +1,25 @@
 package com.example.backend.payload;
 
+import com.example.backend.Models.FileEntity;
+
 public class UploadFileResponse {
-    private String fileName;
+    private FileEntity fileName;
     private String fileDownloadUri;
     private String fileType;
     private long size;
 
-    public UploadFileResponse(String fileName, String fileDownloadUri, String fileType, long size) {
-        this.fileName = fileName;
+    public UploadFileResponse(FileEntity fileName2, String fileDownloadUri, String fileType, long size) {
+        this.fileName = fileName2;
         this.fileDownloadUri = fileDownloadUri;
         this.fileType = fileType;
         this.size = size;
     }
 
-    public String getFileName() {
+    public FileEntity getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(FileEntity fileName) {
         this.fileName = fileName;
     }
 

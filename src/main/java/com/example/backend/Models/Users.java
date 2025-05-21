@@ -1,5 +1,7 @@
 package com.example.backend.Models;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
@@ -10,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -49,4 +52,7 @@ public class Users {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
     private Doctorants doctorant;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<FileEntity> files;
 }
