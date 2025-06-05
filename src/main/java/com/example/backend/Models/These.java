@@ -3,22 +3,21 @@ package com.example.backend.Models;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class These {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
 
     private String titre;
     private String resume;
@@ -31,17 +30,38 @@ public class These {
     private String motCles;
     private String fichierThese;
     private String etatThese;
+
     @Enumerated(EnumType.STRING)
     private Statut statut;
 
     public enum Statut {
-        SOUMISE, EN_COURS, VALIDEE, ARCHIVEE
+        Soumise, // Submitted
+        EnCours, // InProgress
+        Validee, // Validated
+        Archivee // Archived
     }
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "doctorant_id")
     private Doctorants doctorant;
 
-    @OneToMany(mappedBy = "these")
+    @ManyToOne
+    @JoinColumn(name = "superviseur_id")
+    private Encadrant encadrant;
+
+    @ManyToOne
+    @JoinColumn(name = "etablissement_id")
+    private Etablissement etablissement;
+
+    @ManyToOne
+    @JoinColumn(name = "unite_recherche_id")
+    private UniteRecherche uniteRecherche;
+
+@ManyToOne
+    @JoinColumn(name = "chercheur_id")
+    @JsonBackReference("chercheur-theses")
+    private Chercheur chercheur;
+
+    @OneToMany(mappedBy = "these", cascade = CascadeType.ALL)
     private List<Validation> validations;
 }

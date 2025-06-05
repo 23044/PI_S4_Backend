@@ -14,6 +14,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Builder
 public class Doctorants {
 
@@ -31,13 +33,25 @@ public class Doctorants {
     private String numeroMatricule;
     private LocalDate dateNaissance;
     private String nationalite;
-    private String telephone;
-   
 
+    private String telephone;
+
+    // Relation ManyToOne vers Docteur (un doctorant a un seul docteur)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_docteur", nullable = false)
+    private Docteur docteur;
+    private String numeroInscription; // registrationNumber -> numeroInscription
+    private Integer anneeInscription; // registrationYear -> anneeInscription
+
+     // Relation OneToOne vers Users (chaque doctorant correspond à un user)
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true)
-    @JsonManagedReference
+    @JoinColumn(name = "user_id", unique = true) // unique = true recommandé
     private Users user;
+
+   
+    @ManyToOne
+    @JoinColumn(name = "unite_recherche_id") // research_unit_id -> unite_recherche_id
+    private UniteRecherche uniteRecherche; // researchUnit -> uniteRecherche
 
     @ManyToOne
     @JoinColumn(name = "directeur_id", nullable = false)
@@ -56,4 +70,5 @@ public class Doctorants {
         }
         return encadrants;
     }
+
 }
