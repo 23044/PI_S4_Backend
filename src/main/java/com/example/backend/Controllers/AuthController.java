@@ -110,7 +110,7 @@ public ResponseEntity<?> showLoginPage(@RequestParam(value = "error", required =
       String token = UUID.randomUUID().toString();
       userOptional.get().setVerificationToken(token);
       usersRepository.save(userOptional.get());
-      String verifyLink = "http://localhost:8084/verify?token=" + token;
+      String verifyLink = "http://localhost:8081/verify?token=" + token;
       sendVerificationEmail(userOptional.get().getEmail(), userOptional.get().getUsername(), verifyLink);
       // model.addAttribute("message", "Un email de verification a ete envoyer ");
 
@@ -258,12 +258,13 @@ public void verifyEmail(@RequestParam Map<String,String> Token, HttpServletRespo
 
 
     String token = UUID.randomUUID().toString();
+    // newUser.setVerificationToken(token);
     newUser.setVerificationToken(token);
     newUser.setIsVerified(false);
 
     usersRepository.save(newUser);
 
-    String verifyLink = "http://localhost:8084/verify?token=" + token;
+    String verifyLink = "http://localhost:8081/verify?token=" + token;
     sendVerificationEmail(user.getEmail(), user.getUsername(), verifyLink);
 
     // model.addAttribute("message", "Un email de verification a ete envoyer ");
