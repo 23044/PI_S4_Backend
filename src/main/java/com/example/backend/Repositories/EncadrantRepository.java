@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EncadrantRepository extends JpaRepository<Encadrant,Long>{
     // Optional<Encadrant> findByName(String name );
+        Optional<Encadrant> findByUtilisateurId(Long userId);
+
 }
+

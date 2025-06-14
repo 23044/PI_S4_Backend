@@ -12,7 +12,7 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-public class Docteur {
+public class Directeur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class Docteur {
     @JoinColumn(name = "user_id", unique = true)
     private Users utilisateur;
 
-    @OneToMany(mappedBy = "docteur")
+    @OneToMany(mappedBy = "directeur")
     private Set<Doctorants> doctorants;
 
 }

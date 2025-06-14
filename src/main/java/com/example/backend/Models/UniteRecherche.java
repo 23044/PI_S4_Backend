@@ -1,5 +1,8 @@
 package com.example.backend.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,11 +24,10 @@ public class UniteRecherche { // ResearchUnit -> UniteRecherche
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nom;        // name -> nom
-    private String acronyme;   // acronym -> acronyme
-    private String domaine;    // domain -> domaine
+    private String nom; // name -> nom
+    private String acronyme; // acronym -> acronyme
+    private String domaine; // domain -> domaine
 
     @ManyToOne
-    @JoinColumn(name = "etablissement_id") // establishment_id -> etablissement_id
-    private Etablissement etablissement;   // Establishment -> Etablissement
+    private Etablissement etablissement;// Establishment -> Etablissement
 }

@@ -54,4 +54,6 @@ public class UsersController {
         String role = usersService.getUserRole(id);
         return role != null ? ResponseEntity.ok(role) : ResponseEntity.notFound().build();
     }
+
+    
 }

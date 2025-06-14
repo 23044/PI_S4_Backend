@@ -37,31 +37,30 @@ public class Doctorants {
     private String telephone;
 
     // Relation ManyToOne vers Docteur (un doctorant a un seul docteur)
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "id_docteur", nullable = false)
-    private Docteur docteur;
+    // @ManyToOne(optional = false)
+    // @JoinColumn(name = "id_directeur", nullable = false)
+    // private Directeur directeur;
     private String numeroInscription; // registrationNumber -> numeroInscription
     private Integer anneeInscription; // registrationYear -> anneeInscription
 
-     // Relation OneToOne vers Users (chaque doctorant correspond à un user)
+    // Relation OneToOne vers Users (chaque doctorant correspond à un user)
     @OneToOne
     @JoinColumn(name = "user_id", unique = true) // unique = true recommandé
     private Users user;
 
-   
     @ManyToOne
     @JoinColumn(name = "unite_recherche_id") // research_unit_id -> unite_recherche_id
     private UniteRecherche uniteRecherche; // researchUnit -> uniteRecherche
 
     @ManyToOne
     @JoinColumn(name = "directeur_id", nullable = false)
-    private Users directeur;
+    private Directeur directeur;
 
     @ManyToMany
     @JoinTable(name = "doctorant_encadrants", joinColumns = @JoinColumn(name = "doctorant_id"), inverseJoinColumns = @JoinColumn(name = "encadrant_id"))
-    private List<Users> encadrants;
+    private List<Directeur> encadrants;
 
-    public List<Users> getEncadrantsEffectifs() {
+    public List<Directeur> getEncadrantsEffectifs() {
         if (encadrants == null || encadrants.isEmpty()) {
             if (directeur == null) {
                 throw new RuntimeException("Le doctorant n'a pas de directeur affecté");

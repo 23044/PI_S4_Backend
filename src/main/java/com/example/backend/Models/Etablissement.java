@@ -1,7 +1,12 @@
 package com.example.backend.Models;
 
+import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,20 +29,20 @@ public class Etablissement { // Establishment -> Etablissement
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nom;      // name -> nom
-    private String pays;     // country -> pays
+    private String nom; // name -> nom
+    private String pays; // country -> pays
 
     @Enumerated(EnumType.STRING)
     private Type type;
 
     public enum Type {
-        Universite,        // University -> Universite
-        EcoleDoctorale     // DoctoralSchool -> EcoleDoctorale
+        Universite, // University -> Universite
+        EcoleDoctorale // DoctoralSchool -> EcoleDoctorale
     }
 
     @OneToMany(mappedBy = "etablissement")
     private Set<Users> utilisateurs; // users -> utilisateurs
 
-    @OneToMany(mappedBy = "etablissement")
-    private Set<UniteRecherche> unitesRecherche; // researchUnits -> unitesRecherche
+    @OneToMany(mappedBy = "etablissement", cascade = CascadeType.ALL)
+    private List<UniteRecherche> unitesRecherche;
 }
