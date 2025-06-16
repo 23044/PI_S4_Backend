@@ -2,6 +2,7 @@ package com.example.backend.Controllers;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +43,7 @@ import com.example.backend.Repositories.TheseRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
@@ -195,7 +197,7 @@ public class AuthController {
       // Création utilisateur
       Users newUser = Users.builder()
           .firstName(user.getFirstName())
-          .lastname(user.getLastName())
+          .lastname(user.getUsername())
           .email(user.getEmail())
           .username(user.getUsername() != null ? user.getUsername() : "")
           .phoneNumber(user.getPhoneNumber())
@@ -727,4 +729,42 @@ public class AuthController {
   public List<Etablissement> getEcolesDoctorales() {
     return etablissementRepository.findAll();
   }
+
+  @GetMapping("/api/dashboard-info")
+  public ResponseEntity<?> getDashboardInfo(HttpServletRequest request) {
+    String token = jwtUtil.extractTokenFromRequest(request); // méthode personnalisée
+    if (token == null || !jwtUtil.validateToken(token)) {
+      return ResponseEntity.status(401).body(Map.of("error", "Token invalide"));
+    }
+
+    String email = jwtUtil.extractUsername(token);
+    var userOptional = usersRepository.findByEmail(email);
+    if (userOptional.isEmpty()) {
+      return ResponseEntity.status(404).body(Map.of("error", "Utilisateur introuvable"));
+    }
+
+    Users user = userOptional.get();
+
+    if (user.getRole() != Users.Role.doctorant) {
+      return ResponseEntity.status(403).body(Map.of("error", "Accès réservé aux doctorants"));
+    }
+
+    Doctorants doctorant = doctorantRepository.findByUserId(user.getId());
+    These these = theseRepository.findByDoctorantId(doctorant.getId());
+
+    Map<String, Object> data = new HashMap<>();
+    data.put("firstName", user.getFirstName());
+    data.put("lastName", user.getLastName());
+    data.put("anneeInscription", doctorant.getAnneeInscription());
+    data.put("titreThese", these != null ? these.getTitre() : "Titre non défini");
+    data.put("statutThese", these != null ? these.getStatut() : "");
+    data.put("resumeThese", these != null ? these.getResume() : "");
+    data.put("motClesthese", these != null ? these.getMotCles() : "");
+    data.put("dateInscription", these != null ? these.getDateInscription() : null);
+    data.put("directeur", doctorant.getDirecteur().getUtilisateur().getUsername());
+    data.put("role", doctorant.getUser().getRole());
+
+    return ResponseEntity.ok(data);
+  }
+
 }
