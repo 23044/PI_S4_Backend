@@ -1,0 +1,47 @@
+{
+  "users": {
+    "admin_uid_123": {
+      "email": "admin@supnum.com",
+      "name": "Admin SupNum",
+      "role": "admin",
+      "points": 0
+    },
+    "ancien_uid_456": {
+      "email": "ancien@supnum.com",
+      "name": "Ancien SupNum",
+      "role": "ancien",
+      "points": 0
+    },
+    "etudiant_uid_789": {
+      "email": "etudiant@supnum.com",
+      "name": "Étudiant SupNum",
+      "role": "etudiant",
+      "points": 0
+    }
+  },
+  "documents": {
+    "doc_001": {
+      "titre": "Chapitre 1 - Réseaux",
+      "matiere": "Informatique",
+      "type": "CM",
+      "url": "https://example.com/fichier1.pdf",
+      "ajoutePar": "ancien_uid_456",
+      "valide": true
+    },
+    "doc_002": {
+      "titre": "TP 1 - Systèmes",
+      "matiere": "Systèmes",
+      "type": "TP",
+      "url": "https://example.com/fichier2.pdf",
+      "ajoutePar": "ancien_uid_456",
+      "valide": false
+    }
+  },
+  "questions": {
+    "q1": {
+      "question": "Quelle est la différence entre TCP et UDP ?",
+      "matiere": "Réseaux",
+      "auteurId": "etudiant_uid_789"
+    }
+  }
+}

@@ -173,5 +173,7 @@ public class Users {
     private Doctorants doctorant;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonBackReference
+
     private List<FileEntity> files;
 }

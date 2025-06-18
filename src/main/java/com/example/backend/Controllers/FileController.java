@@ -1,7 +1,10 @@
 package com.example.backend.Controllers;
 
 import com.example.backend.Models.FileEntity;
+import com.example.backend.Models.Users;
 import com.example.backend.Services.FileStorageService;
+import com.example.backend.Repositories.UserRepository;
+import com.example.backend.jwtModule.utils.JwtUtil;
 import com.example.backend.payload.UploadFileResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +28,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,9 +40,27 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private Long getUserIdFromRequest(HttpServletRequest request) {
+        String token = jwtUtil.extractTokenFromRequest(request);
+        if (token == null || !jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token invalide ou expiré");
+        }
+
+        String email = jwtUtil.extractUsername(token);
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        return user.getId();
+    }
+
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file,
-            @RequestParam("userId") Long userId) {
+    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        Long userId = getUserIdFromRequest(request);
         FileEntity fileName = fileStorageService.storeFile(file, userId);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -50,7 +71,7 @@ public class FileController {
                 file.getContentType(), file.getSize());
     }
 
-    @Operation(summary = "Upload multiple files", description = "Uploads multiple files with userId")
+    @Operation(summary = "Upload multiple files", description = "Uploads multiple files (auth required)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Files uploaded successfully"),
         @ApiResponse(responseCode = "400", description = "Invalid input")
@@ -59,10 +80,9 @@ public class FileController {
     public ResponseEntity<?> uploadMultipleFiles(
             @Parameter(description = "List of files", required = true)
             @RequestPart("files") MultipartFile[] files,
+            HttpServletRequest request) {
 
-            @Parameter(description = "User ID", required = true)
-            @RequestPart("userId") Long userId) {
-
+        Long userId = getUserIdFromRequest(request);
         List<FileEntity> uploadedFiles = new ArrayList<>();
         for (MultipartFile file : files) {
             FileEntity fileEntity = fileStorageService.storeFile(file, userId);

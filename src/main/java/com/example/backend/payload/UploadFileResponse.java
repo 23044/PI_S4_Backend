@@ -15,6 +15,11 @@ public class UploadFileResponse {
         this.size = size;
     }
 
+    public UploadFileResponse(Long id, String fileName2, String fileDownloadUri2, String fileType2, Long fileSize,
+            String title, String type, String notes) {
+        //TODO Auto-generated constructor stub
+    }
+
     public FileEntity getFileName() {
         return fileName;
     }

@@ -1,5 +1,7 @@
 package com.example.backend.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +23,36 @@ public class FileEntity {
     private Long fileSize = 0L;
     private String filePath;
 
+    private String title;
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    private String type;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    private String notes;
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     @ManyToOne
+    @JsonBackReference
+
     @JoinColumn(name = "user_id")
     private Users user;
 
