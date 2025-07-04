@@ -136,6 +136,7 @@ public class ProfileController {
             Map<String, Object> userMap = new HashMap<>();
             userMap.put("id", user.getId());
             userMap.put("firstName", user.getFirstName());
+            userMap.put("lastName",user.getLastName());
             userMap.put("username", user.getUsername());
             userMap.put("email", user.getEmail());
             userMap.put("phoneNumber", user.getPhoneNumber());

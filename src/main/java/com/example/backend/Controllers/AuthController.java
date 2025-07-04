@@ -140,9 +140,9 @@ public class AuthController {
     userMap.put("role", user.getRole().name());
 
     // Add these fields with null checks
-    if (user.getNationality() != null) {
+    // if (user.getNationality() != null) {
       userMap.put("Nationality", user.getNationality());
-    }
+    // }
     if (user.getEtablissement() != null) {
       userMap.put("etablissementNom", user.getEtablissement().getNom());
       userMap.put("etablissementId", user.getEtablissement().getId());
@@ -179,7 +179,7 @@ public class AuthController {
               theseMap.put("dateSoumission", these.getDateSoumission());
             if (these.getDateInscription() != null)
               theseMap.put("dateInscription", these.getDateInscription());
-            if (these.getDateFinVisee() != null)
+            // if (these.getDateFinVisee() != null)
               theseMap.put("dateFinVisee", these.getDateFinVisee());
             if (these.getDateSoutenance() != null)
               theseMap.put("dateSoutenance", these.getDateSoutenance());
@@ -187,6 +187,8 @@ public class AuthController {
               theseMap.put("etatThese", these.getEtatThese());
             if (these.getStatut() != null)
               theseMap.put("statut", these.getStatut());
+            if(these.getEncadrant() != null)
+            theseMap.put("encadrant",these.getEncadrant().getUtilisateur().getUsername());
             // TheseMotCle theseMotCle = theseMotCleRepository.findByTheseId(these.getId());
             // var motClee = motCleRepository.findById(theseMotCle.getMotCle().getId());
             // MotCle motCleee = motClee.get();

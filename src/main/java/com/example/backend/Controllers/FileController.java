@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,8 +103,31 @@ public class FileController {
     // return ResponseEntity.ok(uploadedFiles);
     // }
 
+    // @GetMapping("/api/files/download/{filename:.+}")
+    // public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
+    // try {
+    // Path filePath = Paths.get("uploads").resolve(filename).normalize(); //
+    // dossier où les fichiers sont stockés
+    // Resource resource = new UrlResource(filePath.toUri());
+
+    // if (!resource.exists()) {
+    // return ResponseEntity.notFound().build();
+    // }
+
+    // return ResponseEntity.ok()
+    // .contentType(MediaType.APPLICATION_OCTET_STREAM)
+    // .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+    // resource.getFilename() + "\"")
+    // .body(resource);
+
+    // } catch (Exception e) {
+    // return ResponseEntity.internalServerError().build();
+    // }
+    // }
+
     @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request)
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName,
+            HttpServletRequest request)
             throws FileNotFoundException {
         Resource resource = fileStorageService.loadFileAsResource(fileName);
 
@@ -119,7 +144,8 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                        resource.getFilename() + "\"")
                 .body(resource);
     }
 

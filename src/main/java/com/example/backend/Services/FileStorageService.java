@@ -53,46 +53,35 @@ public class FileStorageService {
             // Nettoyage du nom d'origine
             String originalName = StringUtils.cleanPath(file.getOriginalFilename());
 
+            // Supprimer un éventuel préfixe numérique suivi de "_"
+            originalName = originalName.replaceFirst("^[0-9]+_", "");
+
+            // Vérification de sécurité
             if (originalName.contains("..")) {
                 throw new FileStorageException("Nom de fichier invalide : " + originalName);
             }
 
-            // Générer un nom unique avec UUID
-            String extension = "";
-            int i = originalName.lastIndexOf(".");
-            if (i > 0) {
-                extension = originalName.substring(i);
-            }
-            String uniqueFileName = UUID.randomUUID().toString() + extension;
+            // 🔥 Construire le chemin complet avec le nom d'origine
+            Path targetLocation = this.fileStorageLocation.resolve(originalName);
 
-            // Construire le chemin
-            Path targetLocation = this.fileStorageLocation.resolve(uniqueFileName);
-
-            // Supprimer un éventuel fichier déjà là avec le même nom
-            try {
-                Files.deleteIfExists(targetLocation);
-            } catch (IOException e) {
-                throw new FileStorageException("Impossible de supprimer un ancien fichier : " + uniqueFileName, e);
-            }
-
-            // Copier le fichier
+            // Écraser un fichier existant avec le même nom (ou le refuser selon besoin)
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            // Trouver l'utilisateur
+            // 🔎 Récupérer l'utilisateur
             Users user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé : " + userId));
 
-            // Enregistrer l'entité en base
+            // 📝 Enregistrer les métadonnées
             FileEntity fileEntity = new FileEntity();
             fileEntity.setTitle(title);
             fileEntity.setType(type);
             fileEntity.setNotes(notes);
-            fileEntity.setFileName(originalName); // nom original affiché
+            fileEntity.setFileName(originalName); // 🟢 nom affiché et réel
             fileEntity.setFileType(file.getContentType());
             fileEntity.setFileSize(file.getSize());
             fileEntity.setUploadDate(LocalDateTime.now());
             fileEntity.setUser(user);
-            fileEntity.setFilePath("/api/files/download/" + uniqueFileName); // chemin d'accès API
+            fileEntity.setFilePath("/api/files/download/" + originalName); // URL d'accès
 
             fileInfoRepository.save(fileEntity);
 

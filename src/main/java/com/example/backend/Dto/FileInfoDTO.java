@@ -13,7 +13,7 @@ public class FileInfoDTO {
 
     public FileInfoDTO(FileEntity entity) {
         this.id = entity.getId();
-        this.fileName = entity.getTitle();
+        this.fileName = entity.getFileName();
         this.fileType = entity.getFileType();
         this.notes = entity.getNotes();
         this.type = entity.getType();
@@ -76,6 +76,6 @@ public class FileInfoDTO {
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
+}
 
     // Getters & Setters
-}
